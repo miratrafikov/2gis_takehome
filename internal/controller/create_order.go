@@ -21,9 +21,10 @@ func (c CreateOrder) Handle(w http.ResponseWriter, r *http.Request) {
 	order, err := c.uc.Handle(body)
 	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusUnprocessableEntity)
 		json.NewEncoder(w).Encode(err.Error())
+	} else {
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(order)
 	}
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(order)
 }

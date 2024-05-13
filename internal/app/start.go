@@ -1,7 +1,17 @@
+// Ниже реализован сервис бронирования номеров в отеле. В предметной области
+// выделены два понятия: Order — заказ, который включает в себя даты бронирования
+// и контакты пользователя, и RoomAvailability — количество свободных номеров на
+// конкретный день.
+//
+// Задание:
+// - провести рефакторинг кода с выделением слоев и абстракций
+// - применить best-practices там где это имеет смысл
+// - исправить имеющиеся в реализации логические и технические ошибки и неточности
 package app
 
 import (
 	"applicationDesignTest/internal/config"
+	"applicationDesignTest/internal/model"
 	"context"
 	"encoding/json"
 	"errors"
@@ -12,29 +22,14 @@ import (
 	"time"
 )
 
-type Order struct {
-	HotelID   string    `json:"hotel_id"`
-	RoomID    string    `json:"room_id"`
-	UserEmail string    `json:"email"`
-	From      time.Time `json:"from"`
-	To        time.Time `json:"to"`
-}
+var Orders = []model.Order{}
 
-var Orders = []Order{}
-
-type RoomAvailability struct {
-	HotelID string    `json:"hotel_id"`
-	RoomID  string    `json:"room_id"`
-	Date    time.Time `json:"date"`
-	Quota   int       `json:"quota"`
-}
-
-var Availability = []RoomAvailability{
-	{"reddison", "lux", date(2024, 1, 1), 1},
-	{"reddison", "lux", date(2024, 1, 2), 1},
-	{"reddison", "lux", date(2024, 1, 3), 1},
-	{"reddison", "lux", date(2024, 1, 4), 1},
-	{"reddison", "lux", date(2024, 1, 5), 0},
+var Availability = []model.RoomAvailability{
+	{HotelID: "reddison", RoomID: "lux", Date: date(2024, 1, 1), Quota: 1},
+	{HotelID: "reddison", RoomID: "lux", Date: date(2024, 1, 2), Quota: 1},
+	{HotelID: "reddison", RoomID: "lux", Date: date(2024, 1, 3), Quota: 1},
+	{HotelID: "reddison", RoomID: "lux", Date: date(2024, 1, 4), Quota: 1},
+	{HotelID: "reddison", RoomID: "lux", Date: date(2024, 1, 5), Quota: 0},
 }
 
 func Start(ctx context.Context, cfg config.Config) {
@@ -52,7 +47,7 @@ func Start(ctx context.Context, cfg config.Config) {
 }
 
 func createOrder(w http.ResponseWriter, r *http.Request) {
-	var newOrder Order
+	var newOrder model.Order
 	json.NewDecoder(r.Body).Decode(&newOrder)
 
 	daysToBook := daysBetween(newOrder.From, newOrder.To)

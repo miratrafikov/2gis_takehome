@@ -3,25 +3,34 @@ package createorder
 import (
 	"applicationDesignTest/internal/log"
 	"applicationDesignTest/internal/model"
-	"applicationDesignTest/internal/repository"
 	"errors"
 	"time"
 )
 
+type OrderRepository interface {
+	Push(order model.Order) []model.Order
+}
+
+type AvailabilityRepository interface {
+	GetAll() []model.RoomAvailability
+	Replace(index int, record model.RoomAvailability) error
+}
+
 type Usecase struct {
-	orderRepository        repository.OrderRepository
-	availabilityRepository repository.AvailabilityRepository
+	orderRepository        OrderRepository
+	availabilityRepository AvailabilityRepository
 	logger                 log.Logger
 }
 
 func New(
-	orderRepository repository.OrderRepository,
-	availabilityRepository repository.AvailabilityRepository,
+	orderRepository OrderRepository,
+	availabilityRepository AvailabilityRepository,
 	logger log.Logger,
 ) Usecase {
 	return Usecase{
-		orderRepository: orderRepository,
-		logger:          logger,
+		orderRepository:        orderRepository,
+		availabilityRepository: availabilityRepository,
+		logger:                 logger,
 	}
 }
 
@@ -67,8 +76,4 @@ func getTimestampsOfDaysBetweenDates(from time.Time, to time.Time) []time.Time {
 
 func toDay(timestamp time.Time) time.Time {
 	return time.Date(timestamp.Year(), timestamp.Month(), timestamp.Day(), 0, 0, 0, 0, time.UTC)
-}
-
-func date(year, month, day int) time.Time {
-	return time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 }

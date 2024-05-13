@@ -5,16 +5,20 @@ import (
 	"errors"
 )
 
-type AvailabilityRepository struct {
+type availabilityRepository struct {
 	availabilityRecords []model.RoomAvailability
 }
 
-func (r *AvailabilityRepository) Push(order model.RoomAvailability) []model.RoomAvailability {
+func NewAvailabilityRepository() *availabilityRepository {
+	return &availabilityRepository{}
+}
+
+func (r *availabilityRepository) Push(order model.RoomAvailability) []model.RoomAvailability {
 	r.availabilityRecords = append(r.availabilityRecords, order)
 	return r.availabilityRecords
 }
 
-func (r AvailabilityRepository) GetByIndex(index int) (model.RoomAvailability, error) {
+func (r availabilityRepository) GetByIndex(index int) (model.RoomAvailability, error) {
 	if index < 0 {
 		return model.RoomAvailability{}, errors.New("invalid index")
 	}
@@ -24,11 +28,11 @@ func (r AvailabilityRepository) GetByIndex(index int) (model.RoomAvailability, e
 	return r.availabilityRecords[index], nil
 }
 
-func (r AvailabilityRepository) GetAll() []model.RoomAvailability {
+func (r availabilityRepository) GetAll() []model.RoomAvailability {
 	return r.availabilityRecords
 }
 
-func (r *AvailabilityRepository) Replace(index int, record model.RoomAvailability) error {
+func (r *availabilityRepository) Replace(index int, record model.RoomAvailability) error {
 	if index < 0 {
 		return errors.New("invalid index")
 	}
@@ -37,4 +41,8 @@ func (r *AvailabilityRepository) Replace(index int, record model.RoomAvailabilit
 	}
 	r.availabilityRecords[index] = record
 	return nil
+}
+
+func (r *availabilityRepository) Close() {
+	r.availabilityRecords = []model.RoomAvailability{}
 }

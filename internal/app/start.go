@@ -20,6 +20,7 @@ func Start(cfg config.Config, logger log.Logger) {
 	mux := createRouter(controllers)
 	server := server.New(usecases, logger)
 	server.Start(cfg.Server.Hostname, cfg.Server.Port, mux)
+	closeRepositories(repositories)
 }
 
 type repositories struct {
@@ -29,8 +30,8 @@ type repositories struct {
 
 func makeRepositories() repositories {
 	return repositories{
-		OrderRepository:        repository.OrderRepository{},
-		AvailabilityRepository: repository.AvailabilityRepository{},
+		OrderRepository:        repository.NewOrderRepository(),
+		AvailabilityRepository: repository.NewAvailabilityRepository(),
 	}
 }
 
@@ -74,4 +75,9 @@ func createRouter(controllers controllers) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/order", controllers.CreateOrder.Handle)
 	return mux
+}
+
+func closeRepositories(repositories repositories) {
+	repositories.AvailabilityRepository.Close()
+	repositories.OrderRepository.Close()
 }

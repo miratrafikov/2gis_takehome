@@ -5,7 +5,6 @@ import (
 	"applicationDesignTest/internal/model"
 	"errors"
 	"fmt"
-	"sync"
 	"time"
 )
 
@@ -23,7 +22,6 @@ type Usecase struct {
 	orderRepository        orderRepository
 	availabilityRepository availabilityRepository
 	logger                 log.Logger
-	bookingMutex           *sync.Mutex
 }
 
 func New(

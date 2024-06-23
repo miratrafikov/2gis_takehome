@@ -2,7 +2,7 @@ package server
 
 import (
 	"applicationDesignTest/internal/log"
-	createorder "applicationDesignTest/internal/usecases/create_order"
+	createorder "applicationDesignTest/internal/usecase/create_order"
 	"errors"
 	"fmt"
 	"net/http"

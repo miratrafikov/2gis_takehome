@@ -2,7 +2,7 @@ package controller
 
 import (
 	"applicationDesignTest/internal/model"
-	createorder "applicationDesignTest/internal/usecases/create_order"
+	createorder "applicationDesignTest/internal/usecase/create_order"
 	"encoding/json"
 	"net/http"
 )
